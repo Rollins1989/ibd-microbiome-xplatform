@@ -1,0 +1,5 @@
+name: ibdmb-kraken
+channels: [conda-forge, bioconda, nodefaults]
+dependencies:
+  - kraken2=2.1
+  - bracken=2.9

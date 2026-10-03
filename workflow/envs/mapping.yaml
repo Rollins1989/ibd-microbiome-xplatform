@@ -1,0 +1,5 @@
+name: ibdmb-mapping
+channels: [conda-forge, bioconda, nodefaults]
+dependencies:
+  - bowtie2=2.5
+  - samtools=1.20

@@ -1,0 +1,5 @@
+name: ibdmb-phylogeny
+channels: [conda-forge, bioconda, nodefaults]
+dependencies:
+  - mafft=7.525
+  - fasttree=2.1

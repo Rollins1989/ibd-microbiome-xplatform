@@ -1,0 +1,8 @@
+name: ibdmb-da_aldex2
+channels: [conda-forge, bioconda, nodefaults]
+dependencies:
+  - r-base=4.3
+  - bioconductor-aldex2
+  - r-data.table
+  - r-yaml
+  - r-optparse

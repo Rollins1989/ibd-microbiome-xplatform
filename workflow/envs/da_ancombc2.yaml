@@ -1,0 +1,10 @@
+name: ibdmb-da_ancombc2
+channels: [conda-forge, bioconda, nodefaults]
+dependencies:
+  - r-base=4.3
+  - bioconductor-ancombc=2.4
+  - bioconductor-phyloseq
+  - r-data.table
+  - r-yaml
+  - r-optparse
+  - r-lmertest

@@ -1,0 +1,9 @@
+name: ibdmb-da_maaslin2
+channels: [conda-forge, bioconda, nodefaults]
+dependencies:
+  - r-base=4.3
+  - bioconductor-maaslin2
+  - r-data.table
+  - r-yaml
+  - r-optparse
+  - r-lmertest

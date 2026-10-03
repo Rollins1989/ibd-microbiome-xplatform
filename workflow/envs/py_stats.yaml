@@ -1,0 +1,15 @@
+name: ibdmb-py_stats
+channels: [conda-forge, bioconda, nodefaults]
+dependencies:
+  - python=3.11
+  - numpy<2
+  - pandas
+  - scipy
+  - scikit-learn=1.5
+  - xgboost=2.1
+  - shap=0.46
+  - matplotlib
+  - seaborn
+  - networkx=3.3
+  - scikit-bio
+  - pyyaml

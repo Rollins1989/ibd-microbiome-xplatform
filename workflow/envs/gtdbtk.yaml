@@ -1,0 +1,9 @@
+name: ibdmb-gtdbtk
+channels: [conda-forge, bioconda, nodefaults]
+dependencies:
+  - gtdbtk=2.4
+  - fasttree=2.1
+  - r-base=4.3
+  - r-ape
+  - r-phangorn
+  - r-optparse

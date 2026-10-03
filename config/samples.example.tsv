@@ -1,0 +1,8 @@
+sample_id	specimen_id	subject_id	data_type	batch	sample_type	week	diagnosis	age	sex	bmi	antibiotics	immunosuppressants	hbi	sccai	assemble	fastq_1	fastq_2
+EX_A1_MGX	EX_A1	EX_P01	MGX	mgx_b1	sample	0	CD	28	F	22.1	No	No	6	NA	yes	https://example.org/EX_A1_MGX_1.fastq.gz	https://example.org/EX_A1_MGX_2.fastq.gz
+EX_A1_16S	EX_A1	EX_P01	16S	r1	sample	0	CD	28	F	22.1	No	No	6	NA	no	https://example.org/EX_A1_16S_1.fastq.gz	https://example.org/EX_A1_16S_2.fastq.gz
+EX_A2_MGX	EX_A2	EX_P01	MGX	mgx_b1	sample	4	CD	28	F	22.1	No	Yes	3	NA	no	https://example.org/EX_A2_MGX_1.fastq.gz	https://example.org/EX_A2_MGX_2.fastq.gz
+EX_A2_16S	EX_A2	EX_P01	16S	r1	sample	4	CD	28	F	22.1	No	Yes	3	NA	no	https://example.org/EX_A2_16S_1.fastq.gz	https://example.org/EX_A2_16S_2.fastq.gz
+EX_B1_MGX	EX_B1	EX_P02	MGX	mgx_b1	sample	0	nonIBD	41	M	26.4	No	No	NA	NA	yes	https://example.org/EX_B1_MGX_1.fastq.gz	https://example.org/EX_B1_MGX_2.fastq.gz
+EX_B1_16S	EX_B1	EX_P02	16S	r2	sample	0	nonIBD	41	M	26.4	No	No	NA	NA	no	https://example.org/EX_B1_16S_1.fastq.gz	https://example.org/EX_B1_16S_2.fastq.gz
+EX_NC1_16S	EX_NC1	NA	16S	r1	negative_control	NA	NA	NA	NA	NA	NA	NA	NA	NA	no	https://example.org/EX_NC1_1.fastq.gz	https://example.org/EX_NC1_2.fastq.gz

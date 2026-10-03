@@ -1,0 +1,32 @@
+# =============================================================================
+# Cross-platform gut microbiome analysis in IBD: 16S rRNA vs shotgun metagenomics
+# Run from the repository root:   snakemake --use-conda --cores 32
+# =============================================================================
+import os
+import re
+import sys
+
+from snakemake.utils import min_version, validate
+
+min_version("8.0")
+sys.path.insert(0, os.path.join(workflow.basedir, "lib"))
+import mbstats as mb  # noqa: E402
+
+configfile: "config/config.yaml"
+validate(config, os.path.join(workflow.basedir, "schemas", "config.schema.yaml"))
+
+include: "rules/common.smk"
+
+if not config["analysis_only"]:
+    include: "rules/qc_download.smk"
+    include: "rules/amplicon.smk"
+    include: "rules/shotgun.smk"
+    if config["mags"]["enabled"]:
+        include: "rules/mags.smk"
+
+include: "rules/analysis.smk"
+
+
+rule all:
+    input:
+        FINAL_TARGETS,

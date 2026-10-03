@@ -1,0 +1,8 @@
+results/
+results_dryrun/
+tests/sim/
+.snakemake/
+__pycache__/
+*.pyc
+.pytest_cache/
+data/

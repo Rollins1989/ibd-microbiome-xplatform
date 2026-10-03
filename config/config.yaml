@@ -1,0 +1,129 @@
+# =============================================================================
+# Cross-platform gut microbiome analysis in IBD (16S rRNA vs shotgun metagenomics)
+# Main configuration. Override any key with:  snakemake --configfile my.yaml
+# =============================================================================
+
+samples: config/samples.tsv      # curated sample sheet (see docs/sample_sheet.md)
+outdir: results
+analysis_only: false             # true = skip upstream processing (inputs must already exist)
+
+# ----------------------------------------------------------------------------
+# Study design
+# ----------------------------------------------------------------------------
+design:
+  diagnosis_levels: [nonIBD, CD, UC]
+  reference_level: nonIBD
+  covariates_numeric: [age, bmi]
+  covariates_categorical: [sex, antibiotics, immunosuppressants]
+  include_batch: true            # sequencing batch/run enters every model as a covariate
+  max_covariate_missing: 0.30    # covariates with more missingness are dropped (and logged)
+  # Disease activity (conventional cut-offs; adjust to your clinical definition)
+  activity:
+    CD: {column: hbi,   threshold: 5}    # Harvey-Bradshaw Index >= 5  -> active
+    UC: {column: sccai, threshold: 5}    # Simple Clinical Colitis Activity Index >= 5 -> active
+  flare:
+    max_gap_weeks: 8             # consecutive visits further apart than this are not linked
+    window: [-3, 2]              # visits relative to flare onset used for trajectories
+
+# ----------------------------------------------------------------------------
+# Reference databases (download/build instructions: docs/databases.md)
+# ----------------------------------------------------------------------------
+databases:
+  host_bowtie2_index: /refdata/GRCh38/GRCh38           # bowtie2 index prefix
+  dada2_train_set: /refdata/gtdb/GTDB_bac120_arc53_ssu_r220_genus.fa.gz   # DADA2-formatted
+  dada2_species_set: ""          # optional addSpecies() reference; "" = skip
+  metaphlan_dir: /refdata/metaphlan
+  metaphlan_index: mpa_vJan21_CHOCOPhlAnSGB_202103      # must match HUMAnN/StrainPhlAn DB
+  humann_nucleotide: /refdata/humann/chocophlan
+  humann_protein: /refdata/humann/uniref
+  kraken2: /refdata/kraken2/standard
+  checkm2: /refdata/checkm2/CheckM2_database/uniref100.KO.1.dmnd
+  gtdbtk: /refdata/gtdbtk/release220
+  bakta: /refdata/bakta/db
+
+# ----------------------------------------------------------------------------
+# 16S branch
+# ----------------------------------------------------------------------------
+amplicon:
+  primer_fwd: ""                 # e.g. GTGYCAGCMGCCGCGGTAA ; "" = primers already removed
+  primer_rev: ""
+  dada2:
+    trunc_len: [240, 200]        # inspect quality plots first!
+    max_ee: [2, 2]
+    trunc_q: 2
+    min_overlap: 12
+    max_mismatch: 0
+    pool: false                  # false | true | "pseudo"
+    min_boot: 50
+    min_asv_length: 100
+  decontam:
+    threshold: 0.1
+  min_reads_per_sample: 5000
+
+# ----------------------------------------------------------------------------
+# Shotgun branch
+# ----------------------------------------------------------------------------
+shotgun:
+  fastp: {min_length: 50, cut_mean_quality: 20}
+  min_microbial_reads: 100000    # estimated MetaPhlAn reads; samples below are excluded
+  kraken2: {enabled: false, read_length: 150, bracken_level: S, bracken_threshold: 10}
+  humann: {enabled: true}
+  strainphlan:
+    clades: []                   # e.g. ["t__SGB4937"]; see docs/databases.md
+    marker_in_n_samples: 80
+    sample_with_n_markers: 80
+    database: ""                 # optional path to the MetaPhlAn .pkl database
+
+mags:
+  enabled: true
+  min_contig_len: 1500
+  min_completeness: 50           # MIMAG medium quality
+  max_contamination: 10
+  hq_completeness: 90
+  hq_contamination: 5
+  derep_ani: 0.95
+  coverm: {min_identity: 95, min_aligned: 75, min_covered_percent: 10}   # CoverM expects percentages
+
+# ----------------------------------------------------------------------------
+# Statistics
+# ----------------------------------------------------------------------------
+layers:
+  16s_genus:   {platform: "16S", type: counts,    da_methods: [clr_lmm, maaslin2, ancombc2, aldex2]}
+  mgx_genus:   {platform: MGX,   type: counts,    da_methods: [clr_lmm, maaslin2, ancombc2, aldex2]}
+  mgx_species: {platform: MGX,   type: counts,    da_methods: [clr_lmm, maaslin2, ancombc2, aldex2]}
+  16s_pathway: {platform: "16S", type: abundance, da_methods: [clr_lmm, maaslin2]}
+  mgx_pathway: {platform: MGX,   type: abundance, da_methods: [clr_lmm, maaslin2]}
+
+stats:
+  min_prevalence: 0.10
+  min_abundance_prop: 0.0001     # mean-proportion floor for abundance-type layers (CPM etc.)
+  q_threshold: 0.10
+  min_methods: 2                 # consensus rule: significant in >= N methods, same direction
+  permanova: {permutations: 9999, subsample_draws: 100}
+  rarefaction_sensitivity: true
+  threads: 8
+  seed: 20240601
+
+networks:
+  layer: mgx_genus
+  samples: baseline              # baseline (1 sample/subject) | all (anti-conservative!)
+  min_group_prevalence: 0.30
+  sparcc: {iterations: 20, permutations: 100}
+  min_abs_r: 0.30
+  fdr: 0.05
+
+ml:
+  tasks: [IBD_vs_nonIBD, CD_vs_nonIBD, UC_vs_nonIBD, CD_vs_UC, preflare]
+  feature_sets:
+    16s: [16s_genus]
+    mgx: [mgx_species]
+    combined: [16s_genus, mgx_species]
+  models: [rf, xgb, logreg]
+  paired_only: true              # compare feature sets on the SAME specimens
+  outer_folds: 5
+  inner_folds: 3
+  repeats: 3
+  min_prevalence: 0.10
+  bootstrap: 1000
+  shap_model: xgb
+  n_jobs: 8

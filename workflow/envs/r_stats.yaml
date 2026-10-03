@@ -1,0 +1,19 @@
+name: ibdmb-r_stats
+channels: [conda-forge, bioconda, nodefaults]
+dependencies:
+  - r-base=4.3
+  - r-tidyverse
+  - r-data.table
+  - r-yaml
+  - r-optparse
+  - r-vegan
+  - r-lme4
+  - r-lmertest
+  - r-ggplot2
+  - r-patchwork
+  - r-ggrepel
+  - r-ape
+  - r-phangorn
+  - r-igraph
+  - bioconductor-phyloseq
+  - bioconductor-decontam

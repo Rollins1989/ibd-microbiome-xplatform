@@ -1,0 +1,6 @@
+name: ibdmb-dada2
+channels: [conda-forge, bioconda, nodefaults]
+dependencies:
+  - r-base=4.3
+  - bioconductor-dada2=1.30
+  - r-optparse

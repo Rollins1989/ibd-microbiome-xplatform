@@ -1,0 +1,4 @@
+name: ibdmb-picrust2
+channels: [conda-forge, bioconda, nodefaults]
+dependencies:
+  - picrust2=2.5

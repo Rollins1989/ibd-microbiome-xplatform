@@ -1,0 +1,4 @@
+name: ibdmb-annotation
+channels: [conda-forge, bioconda, nodefaults]
+dependencies:
+  - bakta=1.9

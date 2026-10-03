@@ -1,0 +1,29 @@
+# Column mapping for workflow/scripts/build_sample_sheet_hmp2.py.
+# !! These names reflect the public HMP2/IBDMDB metadata as we know it; the metadata release you download may
+# !! differ. The script lists the available columns and stops with an explicit message when a mapped column is
+# !! missing - fix the names here, never edit the script.
+metadata:
+  join_key: "External ID"                 # specimen identifier in the HMP2 metadata
+  ena_join_field: sample_alias            # ENA read-run field that carries the same identifier
+  subject: "Participant ID"
+  data_type: "data_type"
+  week: "week_num"
+  diagnosis: "diagnosis"
+  age: "consent_age"
+  sex: null                               # set if your release has it
+  bmi: null
+  antibiotics: "Antibiotics"
+  immunosuppressants: "Immunosuppressants (e.g. oral corticosteroids)"
+  hbi: "hbi"
+  sccai: "sccai"
+data_type_map:                            # metadata value -> platform
+  metagenomics: MGX
+  "16S": 16S
+  amplicon: 16S
+diagnosis_map:
+  CD: CD
+  UC: UC
+  nonIBD: nonIBD
+ena_library_strategy:                     # sanity check of the platform against ENA metadata
+  MGX: WGS
+  16S: AMPLICON

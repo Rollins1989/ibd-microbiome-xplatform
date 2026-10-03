@@ -1,0 +1,5 @@
+name: ibdmb-amr
+channels: [conda-forge, bioconda, nodefaults]
+dependencies:
+  - rgi=6.0
+  - abricate=1.0

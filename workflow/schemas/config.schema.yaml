@@ -1,0 +1,66 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+description: Configuration of the IBD cross-platform microbiome workflow
+type: object
+required: [samples, outdir, analysis_only, design, databases, amplicon, shotgun, mags, layers, stats, networks, ml]
+properties:
+  samples: {type: string}
+  outdir: {type: string, minLength: 1}
+  analysis_only: {type: boolean}
+  design:
+    type: object
+    required: [diagnosis_levels, reference_level, covariates_numeric, covariates_categorical, include_batch, max_covariate_missing, activity, flare]
+    properties:
+      diagnosis_levels: {type: array, items: {type: string}, minItems: 2}
+      reference_level: {type: string}
+      include_batch: {type: boolean}
+      max_covariate_missing: {type: number, minimum: 0, maximum: 1}
+      flare:
+        type: object
+        required: [max_gap_weeks, window]
+        properties:
+          max_gap_weeks: {type: number, exclusiveMinimum: 0}
+          window: {type: array, items: {type: integer}, minItems: 2, maxItems: 2}
+  amplicon:
+    type: object
+    properties:
+      dada2:
+        type: object
+        properties:
+          trunc_len: {type: array, items: {type: integer}, minItems: 2, maxItems: 2}
+          max_ee: {type: array, items: {type: number}, minItems: 2, maxItems: 2}
+          pool: {enum: [false, true, pseudo]}
+  layers:
+    type: object
+    additionalProperties:
+      type: object
+      required: [platform, type, da_methods]
+      properties:
+        platform: {enum: ["16S", "MGX"]}
+        type: {enum: [counts, abundance]}
+        da_methods:
+          type: array
+          items: {enum: [clr_lmm, maaslin2, ancombc2, aldex2]}
+  stats:
+    type: object
+    required: [min_prevalence, q_threshold, min_methods, seed]
+    properties:
+      min_prevalence: {type: number, minimum: 0, maximum: 1}
+      q_threshold: {type: number, exclusiveMinimum: 0, maximum: 1}
+      min_methods: {type: integer, minimum: 1}
+      seed: {type: integer}
+  networks:
+    type: object
+    properties:
+      samples: {enum: [baseline, all]}
+  ml:
+    type: object
+    properties:
+      tasks:
+        type: array
+        items: {enum: [IBD_vs_nonIBD, CD_vs_nonIBD, UC_vs_nonIBD, CD_vs_UC, preflare]}
+      models:
+        type: array
+        items: {enum: [rf, xgb, logreg]}
+      outer_folds: {type: integer, minimum: 2}
+      inner_folds: {type: integer, minimum: 2}
+      repeats: {type: integer, minimum: 1}

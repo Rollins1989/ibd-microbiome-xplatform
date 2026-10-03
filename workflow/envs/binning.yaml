@@ -1,0 +1,9 @@
+name: ibdmb-binning
+channels: [conda-forge, bioconda, nodefaults]
+dependencies:
+  - metabat2=2.15
+  - maxbin2=2.2
+  - concoct=1.1
+  - das_tool=1.1
+  - bowtie2=2.5
+  - samtools=1.20

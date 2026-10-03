@@ -1,0 +1,6 @@
+name: ibdmb-biobakery
+channels: [conda-forge, bioconda, nodefaults]
+dependencies:
+  - metaphlan=4.1
+  - humann=3.9
+  - python=3.9

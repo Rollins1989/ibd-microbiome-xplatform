@@ -1,0 +1,4 @@
+name: ibdmb-assembly
+channels: [conda-forge, bioconda, nodefaults]
+dependencies:
+  - megahit=1.2

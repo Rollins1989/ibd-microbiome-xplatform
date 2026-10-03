@@ -1,0 +1,30 @@
+# Config for the simulated end-to-end test of the downstream analysis (tests/run_test.sh)
+samples: tests/sim/samples.tsv
+outdir: tests/sim/results
+analysis_only: true
+amplicon: {min_reads_per_sample: 1000}
+stats:
+  permanova: {permutations: 199, subsample_draws: 10}
+  threads: 2
+networks:
+  sparcc: {iterations: 5, permutations: 20}
+ml:
+  tasks: [CD_vs_nonIBD, preflare]
+  models: [rf, logreg]
+  repeats: 1
+  outer_folds: 3
+  inner_folds: 2
+  bootstrap: 100
+  shap_model: rf
+  n_jobs: 2
+# The simulated data contain only two DA methods that are installed in the CI sandbox;
+# the real config uses four. Consensus rule is relaxed accordingly.
+layers:
+  16s_genus:   {platform: "16S", type: counts,    da_methods: [clr_lmm]}
+  mgx_genus:   {platform: MGX,   type: counts,    da_methods: [clr_lmm]}
+  mgx_species: {platform: MGX,   type: counts,    da_methods: [clr_lmm]}
+  16s_pathway: {platform: "16S", type: abundance, da_methods: [clr_lmm]}
+  mgx_pathway: {platform: MGX,   type: abundance, da_methods: [clr_lmm]}
+shotgun:
+  min_microbial_reads: 1000
+  strainphlan: {clades: ["t__SGB0001"]}
