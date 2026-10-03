@@ -6,10 +6,10 @@ This is the fastest way to see the workflow run without downloading large refere
 
 - Python 3.11+
 - Snakemake 8.x
-- The Python/R packages required by the lightweight analysis environment
+- Conda or a compatible Conda/Mamba installation
 - `make` (or run the commands below directly)
 
-No GTDB-Tk, CheckM2, MetaPhlAn, HUMAnN, or other large external databases are required for this demo.
+The demo uses Snakemake's per-rule Conda environments, so the analysis dependencies are created automatically. No GTDB-Tk, CheckM2, MetaPhlAn, HUMAnN, or other large external reference databases are required.
 
 ## Run it
 
