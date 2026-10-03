@@ -9,7 +9,7 @@ test:        ## simulated end-to-end test of the downstream analysis (minutes)
 
 demo:        ## lightweight recruiter demo: synthetic cohort, no external databases (minutes)
 	python tests/simulate_data.py demo/sim --seed 7
-	snakemake -s workflow/Snakefile --configfile config/demo.config.yaml --cores 2
+	snakemake -s workflow/Snakefile --configfile config/demo.config.yaml --use-conda --cores 2
 
 
 dryrun:      ## validate the complete DAG (all upstream + downstream rules) with the example sample sheet
