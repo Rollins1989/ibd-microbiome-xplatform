@@ -14,6 +14,40 @@ from pathlib import Path
 import pandas as pd
 
 
+def validate_mag_logs(outdir, samples):
+    """Fail fast when MAG tools returned non-zero but an upstream shell rule swallowed it.
+
+    The MAG rules intentionally allow an individual binner to produce zero bins when the
+    input has no recoverable genomes. A tool-level non-zero exit, however, is an execution
+    failure and must not silently propagate to downstream quality filtering.
+    """
+    out = Path(outdir).resolve()
+    workflow_out = out.parent.parent
+    log_root = workflow_out / "logs"
+    failures = []
+
+    for sample in samples:
+        checks = [
+            ("MetaBAT2", log_root / "binning" / f"{sample}.metabat2.log"),
+            ("MaxBin2", log_root / "binning" / f"{sample}.maxbin2.log"),
+            ("CONCOCT", log_root / "binning" / f"{sample}.concoct.log"),
+            ("DAS Tool", log_root / "dastool" / f"{sample}.log"),
+        ]
+        for tool, path in checks:
+            if not path.exists():
+                continue
+            text = path.read_text(errors="replace")
+            if "returned non-zero" in text:
+                failures.append(f"{tool} ({sample}): {path}")
+
+    if failures:
+        details = "\n".join(f"  - {item}" for item in failures)
+        raise SystemExit(
+            "MAG pipeline detected a swallowed tool failure. "
+            "Inspect the listed logs before continuing:\n" + details
+        )
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--samples", nargs="+", required=True)
@@ -27,6 +61,9 @@ def main():
     a = ap.parse_args()
     if not (len(a.samples) == len(a.bin_dirs) == len(a.reports)):
         raise SystemExit("--samples, --bin-dirs and --reports must have the same length")
+
+    validate_mag_logs(a.outdir, a.samples)
+
     out = Path(a.outdir)
     (out / "passing").mkdir(parents=True, exist_ok=True)
     rows = []
