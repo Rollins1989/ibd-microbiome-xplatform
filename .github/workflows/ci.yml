@@ -16,6 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - name: Set up micromamba environment
         uses: mamba-org/setup-micromamba@v2
         with:
@@ -24,12 +25,20 @@ jobs:
           cache-environment: true
           init-shell: bash
           post-cleanup: 'all'
+
       - name: Install CI-only tooling
         shell: bash -el {0}
-        run: micromamba install -n ibdmb-py_stats -c conda-forge pytest snakemake=8.30.0
+        run: |
+          python -m pip install --disable-pip-version-check --no-cache-dir \
+            "pytest==9.1.1" \
+            "snakemake==8.30.0"
+          python -m pytest --version
+          snakemake --version
+
       - name: Run unit tests
         shell: bash -el {0}
         run: make unit
+
       - name: Validate complete DAG
         shell: bash -el {0}
         run: make dryrun CORES=2
@@ -39,12 +48,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+
       - name: Install Cutadapt
         run: python -m pip install --upgrade pip cutadapt
+
       - name: Download real ZymoBIOMICS 16S test reads
         shell: bash
         run: |
@@ -55,7 +67,9 @@ jobs:
           curl -fL --retry 3 "${base}/1_S103_L001_R2_001.fastq.gz" -o ci_real_data/sample_R2.fastq.gz
           gzip -t ci_real_data/sample_R1.fastq.gz
           gzip -t ci_real_data/sample_R2.fastq.gz
+
       - name: Run Cutadapt on real reads
+        shell: bash
         run: |
           set -euo pipefail
           cutadapt \
