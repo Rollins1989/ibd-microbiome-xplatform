@@ -1,0 +1,28 @@
+# Lightweight recruiter-facing demo: synthetic cohort, no external databases.
+samples: demo/sim/samples.tsv
+outdir: demo/results
+analysis_only: true
+amplicon: {min_reads_per_sample: 1000}
+stats:
+  permanova: {permutations: 99, subsample_draws: 5}
+  threads: 2
+networks:
+  sparcc: {iterations: 3, permutations: 10}
+ml:
+  tasks: [CD_vs_nonIBD]
+  models: [rf, logreg]
+  repeats: 1
+  outer_folds: 3
+  inner_folds: 2
+  bootstrap: 50
+  shap_model: rf
+  n_jobs: 2
+layers:
+  16s_genus:   {platform: "16S", type: counts,    da_methods: [clr_lmm]}
+  mgx_genus:   {platform: MGX,   type: counts,    da_methods: [clr_lmm]}
+  mgx_species: {platform: MGX,   type: counts,    da_methods: [clr_lmm]}
+  16s_pathway: {platform: "16S", type: abundance, da_methods: [clr_lmm]}
+  mgx_pathway: {platform: MGX,   type: abundance, da_methods: [clr_lmm]}
+shotgun:
+  min_microbial_reads: 1000
+  strainphlan: {clades: ["t__SGB0001"]}
