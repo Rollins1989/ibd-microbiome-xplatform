@@ -1,6 +1,6 @@
 # Lightweight recruiter-facing demo: synthetic cohort, no external databases.
 samples: demo/sim/samples.tsv
-outdir: demo/results
+outdir: demo/sim/results
 analysis_only: true
 amplicon: {min_reads_per_sample: 1000}
 stats:
