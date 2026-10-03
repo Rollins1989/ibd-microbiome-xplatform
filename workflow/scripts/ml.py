@@ -139,14 +139,38 @@ def build_matrix(d, layers, layer_dir, fs_layers):
 
 
 def permute_labels(y, groups, rng):
-    """Shuffle labels between subjects; if labels vary within subject, shuffle whole subject label vectors' order."""
-    subj = pd.unique(groups)
-    lab = {s: y[groups == s] for s in subj}
-    if all(len(set(v)) == 1 for v in lab.values()):
-        perm = rng.permutation([v[0] for v in lab.values()])
-        m = dict(zip(subj, perm))
-        return np.array([m[s] for s in groups])
-    return rng.permutation(y)
+    """Shuffle complete subject-level label vectors without breaking within-subject structure.
+
+    Constant-within-subject labels are permuted between subjects. For longitudinal labels
+    that vary by visit (for example ``preflare``), complete label vectors are permuted
+    between subjects with the same number of observations. This avoids the previous
+    specimen-level fallback, which destroyed the within-subject dependence structure.
+    """
+    groups = np.asarray(groups)
+    y = np.asarray(y)
+    subjects = pd.unique(groups)
+    idx_by_subject = {s: np.flatnonzero(groups == s) for s in subjects}
+    labels_by_subject = {s: y[idx_by_subject[s]].copy() for s in subjects}
+
+    if all(np.all(v == v[0]) for v in labels_by_subject.values()):
+        shuffled = rng.permutation(subjects)
+        out = np.empty_like(y)
+        for target, source in zip(subjects, shuffled):
+            out[idx_by_subject[target]] = labels_by_subject[source][0]
+        return out
+
+    # Longitudinal labels may vary within a subject. Only exchange complete
+    # vectors among subjects with the same visit count so every row keeps its
+    # original within-subject position and vector length.
+    out = y.copy()
+    by_n = {}
+    for s, idx in idx_by_subject.items():
+        by_n.setdefault(len(idx), []).append(s)
+    for subject_group in by_n.values():
+        shuffled = rng.permutation(subject_group)
+        for target, source in zip(subject_group, shuffled):
+            out[idx_by_subject[target]] = labels_by_subject[source]
+    return out
 
 
 def cluster_bootstrap_auc(y, p, groups, B, rng):
